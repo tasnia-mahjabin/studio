@@ -20,7 +20,7 @@ const EstimateParkingCostInputSchema = z.object({
 export type EstimateParkingCostInput = z.infer<typeof EstimateParkingCostInputSchema>;
 
 const EstimateParkingCostOutputSchema = z.object({
-  estimatedCost: z.number().describe('The estimated parking cost in dollars.'),
+  estimatedCost: z.number().describe('The estimated parking cost in Taka.'),
 });
 export type EstimateParkingCostOutput = z.infer<typeof EstimateParkingCostOutputSchema>;
 
@@ -53,17 +53,40 @@ async (input) => {
   return new Date(averageDepartureTime).toISOString();
 });
 
+const calculateParkingCost = ai.defineTool({
+  name: 'calculateParkingCost',
+  description: 'Calculates the parking cost based on entry and departure times.',
+  inputSchema: z.object({
+    entryTime: z.string().describe('The entry time as an ISO string.'),
+    departureTime: z.string().describe('The departure time as an ISO string.'),
+  }),
+  outputSchema: z.object({
+    cost: z.number().describe('The calculated cost in Taka.')
+  }),
+}, async (input) => {
+  const entry = new Date(input.entryTime);
+  const departure = new Date(input.departureTime);
+  const durationMinutes = (departure.getTime() - entry.getTime()) / (1000 * 60);
+
+  if (durationMinutes <= 5) {
+    return { cost: 10 };
+  }
+
+  const cost = 10 + (durationMinutes - 5) * 2;
+  return { cost };
+});
+
 const prompt = ai.definePrompt({
   name: 'estimateParkingCostPrompt',
   input: {schema: EstimateParkingCostInputSchema},
   output: {schema: EstimateParkingCostOutputSchema},
-  tools: [predictDepartureTime],
+  tools: [predictDepartureTime, calculateParkingCost],
   prompt: `You are a parking cost estimator. You will be provided with the entry time and historical departure times. 
 
-  First, predict the departure time using the predictDepartureTime tool.
-  Then, calculate the parking cost based on the following pricing:
-  - The first 5 minutes are 10tk.
-  - After 5 minutes, the cost is 2tk per minute.
+  Your goal is to return the estimated parking cost.
+  
+  1. First, predict the departure time using the predictDepartureTime tool.
+  2. Then, use the calculateParkingCost tool with the original entry time and the predicted departure time to get the final estimated cost.
   
   Entry Time: {{{entryTime}}}
 `,
