@@ -1,4 +1,4 @@
-# Firebase Studio
+# ParkEase
 
 This is a NextJS starter in Firebase Studio.
 
