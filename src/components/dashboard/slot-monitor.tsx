@@ -14,15 +14,15 @@ import { useState, useEffect } from 'react';
 const TOTAL_SLOTS = 4;
 
 export default function SlotMonitor() {
-  const [availableSlots, setAvailableSlots] = useState(0);
+  const [availableSlots, setAvailableSlots] = useState<number | null>(null);
 
   useEffect(() => {
-    // Mock real-time data fetching
+    // Mock real-time data fetching, ensuring it only runs on the client
     setAvailableSlots(Math.floor(Math.random() * (TOTAL_SLOTS + 1)));
   }, []);
 
-  const occupiedSlots = TOTAL_SLOTS - availableSlots;
-  const progressValue = (occupiedSlots / TOTAL_SLOTS) * 100;
+  const occupiedSlots = availableSlots !== null ? TOTAL_SLOTS - availableSlots : 0;
+  const progressValue = availableSlots !== null ? (occupiedSlots / TOTAL_SLOTS) * 100 : 0;
 
   return (
     <Card>
@@ -38,7 +38,11 @@ export default function SlotMonitor() {
       <CardContent>
         <div className="space-y-4">
           <div className="text-center">
-            <p className="text-4xl font-bold text-primary">{availableSlots}</p>
+            {availableSlots !== null ? (
+               <p className="text-4xl font-bold text-primary">{availableSlots}</p>
+            ) : (
+               <p className="text-4xl font-bold text-primary">-</p>
+            )}
             <p className="text-sm text-muted-foreground">
               of {TOTAL_SLOTS} slots available
             </p>
