@@ -11,18 +11,33 @@ import { Progress } from '@/components/ui/progress';
 import { Car } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
-const TOTAL_SLOTS = 4;
+interface SlotData {
+    availableSlots: number;
+    totalSlots: number;
+    occupiedSlots: number;
+    progressValue: number;
+}
+
 
 export default function SlotMonitor() {
-  const [availableSlots, setAvailableSlots] = useState<number | null>(null);
+  const [slotData, setSlotData] = useState<SlotData | null>(null);
 
   useEffect(() => {
-    // Mock real-time data fetching, ensuring it only runs on the client
-    setAvailableSlots(Math.floor(Math.random() * (TOTAL_SLOTS + 1)));
-  }, []);
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/dashboard');
+        const data = await response.json();
+        setSlotData(data.slotMonitor);
+      } catch (error) {
+        console.error("Failed to fetch slot data:", error);
+      }
+    };
 
-  const occupiedSlots = availableSlots !== null ? TOTAL_SLOTS - availableSlots : 0;
-  const progressValue = availableSlots !== null ? (occupiedSlots / TOTAL_SLOTS) * 100 : 0;
+    fetchData(); // Initial fetch
+    const interval = setInterval(fetchData, 3000); // Poll every 3 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <Card>
@@ -32,25 +47,25 @@ export default function SlotMonitor() {
           <Car className="h-6 w-6 text-muted-foreground" />
         </div>
         <CardDescription>
-          Check for open parking spaces.
+          Live parking space status.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           <div className="text-center">
-            {availableSlots !== null ? (
-               <p className="text-4xl font-bold text-primary">{availableSlots}</p>
+            {slotData !== null ? (
+               <p className="text-4xl font-bold text-primary">{slotData.availableSlots}</p>
             ) : (
                <p className="text-4xl font-bold text-primary">-</p>
             )}
             <p className="text-sm text-muted-foreground">
-              of {TOTAL_SLOTS} slots available
+              of {slotData?.totalSlots ?? '-'} slots available
             </p>
           </div>
-          <Progress value={progressValue} aria-label={`${occupiedSlots} of ${TOTAL_SLOTS} slots occupied`} />
+          <Progress value={slotData?.progressValue ?? 0} aria-label={`${slotData?.occupiedSlots ?? 0} of ${slotData?.totalSlots ?? 0} slots occupied`} />
           <div className="flex justify-between text-xs text-muted-foreground">
             <span>Occupied</span>
-            <span>{occupiedSlots}/{TOTAL_SLOTS}</span>
+            <span>{slotData?.occupiedSlots ?? 0}/{slotData?.totalSlots ?? 0}</span>
           </div>
         </div>
       </CardContent>

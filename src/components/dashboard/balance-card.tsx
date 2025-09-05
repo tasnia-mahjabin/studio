@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Card,
   CardContent,
@@ -6,13 +8,30 @@ import {
   CardDescription,
   CardFooter,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Wallet } from 'lucide-react';
 import { RechargeDialog } from './recharge-dialog';
+import { useEffect, useState } from 'react';
 
 export default function BalanceCard() {
-  // In a real app, this would come from user data
-  const currentBalance = 4250.50;
+  const [balance, setBalance] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/dashboard');
+        const data = await response.json();
+        setBalance(data.balanceCard.currentBalance);
+      } catch (error) {
+        console.error("Failed to fetch balance data:", error);
+      }
+    };
+
+    fetchData(); // Initial fetch
+    const interval = setInterval(fetchData, 5000); // Poll every 5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
 
   return (
     <Card>
@@ -25,7 +44,7 @@ export default function BalanceCard() {
       </CardHeader>
       <CardContent>
         <p className="text-4xl font-bold text-secondary">
-          Tk {currentBalance.toFixed(2)}
+          {balance !== null ? `Tk ${balance.toFixed(2)}` : 'Loading...'}
         </p>
       </CardContent>
       <CardFooter>

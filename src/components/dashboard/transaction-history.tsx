@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Card,
   CardContent,
@@ -15,43 +17,38 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { History } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
-const transactions = [
-  {
-    id: 'txn_1',
-    date: '2024-07-28',
-    entryTime: '10:05 AM',
-    exitTime: '11:45 AM',
-    duration: '1h 40m',
-    cost: 210.0,
-  },
-  {
-    id: 'txn_2',
-    date: '2024-07-27',
-    entryTime: '02:15 PM',
-    exitTime: '02:25 PM',
-    duration: '10m',
-    cost: 20.0,
-  },
-  {
-    id: 'txn_3',
-    date: '2024-07-25',
-    entryTime: '09:00 AM',
-    exitTime: '05:00 PM',
-    duration: '8h 0m',
-    cost: 950.0,
-  },
-  {
-    id: 'txn_4',
-    date: '2024-07-24',
-    entryTime: '06:30 PM',
-    exitTime: '09:10 PM',
-    duration: '2h 40m',
-    cost: 310.0,
-  },
-];
+interface Transaction {
+  id: string;
+  date: string;
+  entryTime: string;
+  exitTime: string;
+  duration: string;
+  cost: number;
+}
 
 export default function TransactionHistory() {
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/dashboard');
+        const data = await response.json();
+        setTransactions(data.transactionHistory.transactions);
+      } catch (error) {
+        console.error("Failed to fetch transaction data:", error);
+      }
+    };
+
+    fetchData(); // Initial fetch
+    // Transactions are less likely to change frequently, so polling can be less often or on-demand
+    const interval = setInterval(fetchData, 10000); // Poll every 10 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <Card>
       <CardHeader>
@@ -75,17 +72,25 @@ export default function TransactionHistory() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {transactions.map((txn) => (
-              <TableRow key={txn.id}>
-                <TableCell className="hidden sm:table-cell">{txn.date}</TableCell>
-                <TableCell>{txn.entryTime}</TableCell>
-                <TableCell>{txn.exitTime}</TableCell>
-                <TableCell className="hidden sm:table-cell">{txn.duration}</TableCell>
-                <TableCell className="text-right font-medium">
-                  <Badge variant="outline">Tk {txn.cost.toFixed(2)}</Badge>
+            {transactions.length > 0 ? (
+              transactions.map((txn) => (
+                <TableRow key={txn.id}>
+                  <TableCell className="hidden sm:table-cell">{txn.date}</TableCell>
+                  <TableCell>{txn.entryTime}</TableCell>
+                  <TableCell>{txn.exitTime}</TableCell>
+                  <TableCell className="hidden sm:table-cell">{txn.duration}</TableCell>
+                  <TableCell className="text-right font-medium">
+                    <Badge variant="outline">Tk {txn.cost.toFixed(2)}</Badge>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center">
+                  Loading transactions...
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </CardContent>

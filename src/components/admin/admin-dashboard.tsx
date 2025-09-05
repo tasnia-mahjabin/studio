@@ -13,12 +13,45 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Settings, Users, BarChart, TrendingUp } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+interface AdminData {
+  currentCapacity: {
+    occupied: number;
+    total: number;
+    percentage: string;
+  };
+  todaysRevenue: {
+    amount: number;
+    change: string;
+  };
+  activeSessions: {
+    count: number;
+  };
+}
 
 export default function AdminDashboard() {
   const { toast } = useToast();
   const [initialRate, setInitialRate] = useState('10');
   const [perMinuteRate, setPerMinuteRate] = useState('2');
+  const [adminData, setAdminData] = useState<AdminData | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/dashboard');
+        const data = await response.json();
+        setAdminData(data.adminDashboard);
+      } catch (error) {
+        console.error("Failed to fetch admin data:", error);
+      }
+    };
+
+    fetchData(); // Initial fetch
+    const interval = setInterval(fetchData, 3000); // Poll every 3 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handlePriceUpdate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,8 +74,12 @@ export default function AdminDashboard() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">2 / 4 cars</div>
-            <p className="text-xs text-muted-foreground">50% full</p>
+            <div className="text-2xl font-bold">
+              {adminData ? `${adminData.currentCapacity.occupied} / ${adminData.currentCapacity.total} cars` : 'Loading...'}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {adminData ? `${adminData.currentCapacity.percentage}% full` : ''}
+            </p>
           </CardContent>
         </Card>
         <Card>
@@ -51,8 +88,12 @@ export default function AdminDashboard() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">Tk 2750.50</div>
-            <p className="text-xs text-muted-foreground">+15% from yesterday</p>
+            <div className="text-2xl font-bold">
+              {adminData ? `Tk ${adminData.todaysRevenue.amount.toFixed(2)}` : 'Loading...'}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {adminData ? `${adminData.todaysRevenue.change} from yesterday` : ''}
+            </p>
           </CardContent>
         </Card>
         <Card>
@@ -61,7 +102,9 @@ export default function AdminDashboard() {
             <BarChart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">2</div>
+            <div className="text-2xl font-bold">
+              {adminData ? adminData.activeSessions.count : '...'}
+            </div>
             <p className="text-xs text-muted-foreground">Cars currently parked</p>
           </CardContent>
         </Card>
