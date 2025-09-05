@@ -12,7 +12,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { DollarSign, Settings, Users, BarChart } from 'lucide-react';
+import { Settings, Users, BarChart, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 
 export default function AdminDashboard() {
@@ -48,10 +48,10 @@ export default function AdminDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Today's Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$275.50</div>
+            <div className="text-2xl font-bold">Tk 2750.50</div>
             <p className="text-xs text-muted-foreground">+15% from yesterday</p>
           </CardContent>
         </Card>
@@ -80,7 +80,7 @@ export default function AdminDashboard() {
               <div className="space-y-2">
                 <Label htmlFor="initialRate">Initial Rate (first 5 mins)</Label>
                 <div className="relative">
-                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">Tk</span>
                   <Input 
                     id="initialRate" 
                     type="number" 
@@ -93,7 +93,7 @@ export default function AdminDashboard() {
               <div className="space-y-2">
                 <Label htmlFor="perMinuteRate">Per Minute Rate (after 5 mins)</Label>
                  <div className="relative">
-                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">Tk</span>
                   <Input 
                     id="perMinuteRate" 
                     type="number" 

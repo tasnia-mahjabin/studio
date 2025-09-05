@@ -23,7 +23,7 @@ const transactions = [
     entryTime: '10:05 AM',
     exitTime: '11:45 AM',
     duration: '1h 40m',
-    cost: 35.0,
+    cost: 210.0,
   },
   {
     id: 'txn_2',
@@ -39,7 +39,7 @@ const transactions = [
     entryTime: '09:00 AM',
     exitTime: '05:00 PM',
     duration: '8h 0m',
-    cost: 150.0,
+    cost: 950.0,
   },
   {
     id: 'txn_4',
@@ -47,7 +47,7 @@ const transactions = [
     entryTime: '06:30 PM',
     exitTime: '09:10 PM',
     duration: '2h 40m',
-    cost: 65.0,
+    cost: 310.0,
   },
 ];
 
@@ -82,7 +82,7 @@ export default function TransactionHistory() {
                 <TableCell>{txn.exitTime}</TableCell>
                 <TableCell className="hidden sm:table-cell">{txn.duration}</TableCell>
                 <TableCell className="text-right font-medium">
-                  <Badge variant="outline">${txn.cost.toFixed(2)}</Badge>
+                  <Badge variant="outline">Tk {txn.cost.toFixed(2)}</Badge>
                 </TableCell>
               </TableRow>
             ))}

@@ -24,13 +24,12 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { DollarSign } from 'lucide-react';
 
 const rechargeSchema = z.object({
   amount: z.coerce
     .number({ invalid_type_error: 'Please enter a valid number.' })
     .positive({ message: 'Amount must be positive.' })
-    .min(5, { message: 'Minimum recharge is $5.00.' }),
+    .min(100, { message: 'Minimum recharge is Tk 100.' }),
 });
 
 export function RechargeDialog() {
@@ -40,7 +39,7 @@ export function RechargeDialog() {
   const form = useForm<z.infer<typeof rechargeSchema>>({
     resolver: zodResolver(rechargeSchema),
     defaultValues: {
-      amount: 10,
+      amount: 500,
     },
   });
 
@@ -49,7 +48,7 @@ export function RechargeDialog() {
     console.log(values);
     toast({
       title: 'Recharge Successful!',
-      description: `Your balance has been increased by $${values.amount.toFixed(2)}.`,
+      description: `Your balance has been increased by Tk ${values.amount.toFixed(2)}.`,
     });
     setOpen(false);
     form.reset();
@@ -74,11 +73,11 @@ export function RechargeDialog() {
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Amount</FormLabel>
+                  <FormLabel>Amount (Tk)</FormLabel>
                   <FormControl>
                     <div className="relative">
-                       <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                       <Input type="number" placeholder="e.g., 20" className="pl-8" {...field} />
+                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">Tk</span>
+                       <Input type="number" placeholder="e.g., 500" className="pl-8" {...field} />
                     </div>
                   </FormControl>
                   <FormMessage />

@@ -73,7 +73,7 @@ export default function CostEstimator() {
               <AlertTitle className="text-primary font-bold">Estimated Cost</AlertTitle>
               <AlertDescription>
                 <p className="text-lg font-semibold">
-                  ${state.data.estimatedCost.toFixed(2)}
+                  Tk {state.data.estimatedCost.toFixed(2)}
                 </p>
                 <p className="text-xs">This is an AI-powered prediction and may vary.</p>
               </AlertDescription>

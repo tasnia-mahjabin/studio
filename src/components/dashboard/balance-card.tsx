@@ -12,7 +12,7 @@ import { RechargeDialog } from './recharge-dialog';
 
 export default function BalanceCard() {
   // In a real app, this would come from user data
-  const currentBalance = 42.50;
+  const currentBalance = 4250.50;
 
   return (
     <Card>
@@ -25,7 +25,7 @@ export default function BalanceCard() {
       </CardHeader>
       <CardContent>
         <p className="text-4xl font-bold text-secondary">
-          ${currentBalance.toFixed(2)}
+          Tk {currentBalance.toFixed(2)}
         </p>
       </CardContent>
       <CardFooter>
