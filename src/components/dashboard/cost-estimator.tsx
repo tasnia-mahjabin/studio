@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useActionState } from 'react';
 import { handleEstimateCost, type EstimateCostState } from '@/app/actions';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Loader2, Wand2, AlertCircle } from 'lucide-react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useFormStatus } from 'react-dom';
 
 const initialState: EstimateCostState = {
   status: 'idle',
@@ -44,7 +44,7 @@ function SubmitButton() {
 
 export default function CostEstimator() {
   const [entryTime, setEntryTime] = useState(new Date().toISOString().slice(0, 16));
-  const [state, formAction] = useFormState(handleEstimateCost, initialState);
+  const [state, formAction] = useActionState(handleEstimateCost, initialState);
 
   return (
     <Card>
